@@ -6,6 +6,7 @@ from foodplan.views import *
 
 urlpatterns = [
     path('', index, name='index'),
+    path('free_recipes/', free_recipes, name='free_recipes'),
     path('admin/', admin.site.urls),
     path('order/', order, name='order'),
     path('card/', card, name='card'),
