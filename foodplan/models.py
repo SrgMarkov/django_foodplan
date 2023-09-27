@@ -136,10 +136,10 @@ class Recipe (models.Model):
     )
 
     class MealTimes(models.TextChoices):
-        BREAKFAST = 'BREAKFAST', 'Завтрак'
-        LUNCH = 'LUNCH', 'Обед'
-        DINNER = 'DINNER', 'Ужин'
-        DESSERT = 'DESSERT', 'Десерт'
+        BREAKFAST = 'завтрак', 'завтрак'
+        LUNCH = 'обед', 'обед'
+        DINNER = 'ужин', 'ужин'
+        DESSERT = 'десерт', 'десерт'
 
     meal_time = models.CharField(
         'время приема пищи',
@@ -148,10 +148,10 @@ class Recipe (models.Model):
     )
 
     class Types(models.TextChoices):
-        CLASSIC = 'CLASSIC', 'Классическое'
-        LOW_CARB = 'LOW_CARB', 'Низкоуглеводное'
-        VEGETARIAN = 'VEGETARIAN', 'Вегетарианское'
-        KETO = 'KETO', 'Кето'
+        CLASSIC = 'классическое', 'классическое'
+        LOW_CARB = 'низкоуглеводное', 'низкоуглеводное'
+        VEGETARIAN = 'вегетарианское', 'вегетарианское'
+        KETO = 'кето', 'кето'
 
     type = models.CharField(
         'тип меню',
@@ -161,7 +161,7 @@ class Recipe (models.Model):
     )
 
     calories = models.IntegerField(
-        'калорий на 100 гр.',
+        'калорий',
         default=0,
     )
 
