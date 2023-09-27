@@ -129,6 +129,24 @@ class Recipe (models.Model):
         max_length=150,
     )
 
+    image = models.ImageField(
+        'фото',
+        null=True,
+        blank=True,
+    )
+
+    class MealTimes(models.TextChoices):
+        BREAKFAST = 'BREAKFAST', 'Завтрак'
+        LUNCH = 'LUNCH', 'Обед'
+        DINNER = 'DINNER', 'Ужин'
+        DESSERT = 'DESSERT', 'Десерт'
+
+    meal_time = models.CharField(
+        'время приема пищи',
+        choices=MealTimes.choices,
+        max_length=10
+    )
+
     class Types(models.TextChoices):
         CLASSIC = 'CLASSIC', 'Классическое'
         LOW_CARB = 'LOW_CARB', 'Низкоуглеводное'

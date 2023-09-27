@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import Rate, Ingredient, Recipe, RecipeItem, Order
 from rangefilter.filters import NumericRangeFilterBuilder
 
@@ -24,12 +25,15 @@ class RecipeAdmin(admin.ModelAdmin):
 
     list_display = (
         'name',
+        'admin_image',
+        'meal_time',
         'type',
         'calories',
         'relevance',
     )
 
     list_filter = [
+        'meal_time',
         'type',
         'relevance',
     ]
@@ -42,6 +46,15 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = [
         RecipeItemInline
     ]
+
+    def admin_image(self, obj):
+        if obj.image:
+            return format_html(
+                f'''<a href="{obj.image.url}" target="_blank">
+                  <img src="{obj.image.url}" alt="{obj.image}" 
+                    width="50" height="50" style="object-fit: cover;"/></a>
+                ''')
+    admin_image.allow_tags = True
 
     def save_model(self, request, obj, form, change):
         if obj.pk:
