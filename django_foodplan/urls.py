@@ -1,11 +1,15 @@
 from django.contrib import admin
 from django.urls import path
 
-from foodplan import views
+from foodplan.views import *
+
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', index, name='index'),
     path('admin/', admin.site.urls),
-    path('order/', views.order, name='order'),
-    path('card/', views.card, name='card'),
+    path('order/', order, name='order'),
+    path('card/', card, name='card'),
+    path('auth/', auth, name='auth'),
+    path('registration/', RegisterUser.as_view(), name='registration'),
+    path('lk/', lk, name='lk'),
 ]

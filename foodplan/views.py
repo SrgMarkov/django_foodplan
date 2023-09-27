@@ -1,8 +1,34 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+
+from .forms import *
+
+
+class RegisterUser(CreateView):
+    form_class = RegisterUserForm
+    template_name = 'registration.html'
+    success_url = reverse_lazy('auth')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return dict(list(context.items()))
 
 
 def index(request):
     return render(request, 'index.html')
+
+
+def auth(request):
+    return render(request, 'auth.html')
+
+
+def registration(request):
+    return render(request, 'registration.html')
+
+
+def lk(request):
+    return render(request, 'lk.html')
 
 
 def order(request):
