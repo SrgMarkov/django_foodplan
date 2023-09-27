@@ -1,7 +1,7 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,8 +15,8 @@
     <header>
         <nav class="navbar navbar-light fixed-top navbar__opacity">
             <div class="container">
-                <a class="navbar-brand" href="#">
-                    <img src="{% static 'img/logo.8d8f24edbb5f.svg' %}" height="55" width="189" alt="">
+                <a class="navbar-brand" href="{% url 'index' %}">
+                    <img src="{% static 'img/logo.png' %}" height="55" width="189" alt="">
                 </a>
                 <button class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green">Войти</button>
             </div>
@@ -32,7 +32,8 @@
                             Вы получаете рецепты + список продуктов.<br>
                             Больше не нужно думать, что готовить.</h4>
                         <div class="d-block mt-3">
-                            <button class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green">Хочу попробовать</button>
+                            <button class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green"
+                            onclick="window.location.href='{% url 'order' %}'">Хочу попробовать</button>
                         </div>
                     </div>
                 </div>
