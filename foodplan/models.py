@@ -129,11 +129,29 @@ class Recipe (models.Model):
         max_length=150,
     )
 
+    image = models.ImageField(
+        'фото',
+        null=True,
+        blank=True,
+    )
+
+    class MealTimes(models.TextChoices):
+        BREAKFAST = 'завтрак', 'завтрак'
+        LUNCH = 'обед', 'обед'
+        DINNER = 'ужин', 'ужин'
+        DESSERT = 'десерт', 'десерт'
+
+    meal_time = models.CharField(
+        'время приема пищи',
+        choices=MealTimes.choices,
+        max_length=10
+    )
+
     class Types(models.TextChoices):
-        CLASSIC = 'CLASSIC', 'Классическое'
-        LOW_CARB = 'LOW_CARB', 'Низкоуглеводное'
-        VEGETARIAN = 'VEGETARIAN', 'Вегетарианское'
-        KETO = 'KETO', 'Кето'
+        CLASSIC = 'классическое', 'классическое'
+        LOW_CARB = 'низкоуглеводное', 'низкоуглеводное'
+        VEGETARIAN = 'вегетарианское', 'вегетарианское'
+        KETO = 'кето', 'кето'
 
     type = models.CharField(
         'тип меню',
@@ -143,7 +161,7 @@ class Recipe (models.Model):
     )
 
     calories = models.IntegerField(
-        'калорий на 100 гр.',
+        'калорий',
         default=0,
     )
 

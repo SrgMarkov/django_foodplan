@@ -1,7 +1,9 @@
+import random
+
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-
+from .models import Rate, Ingredient, Recipe, RecipeItem, Order
 from .forms import *
 
 
@@ -15,7 +17,44 @@ class RegisterUser(CreateView):
         return dict(list(context.items()))
 
 
+def free_recipes(request):
+    recipes = []
+    try:
+        random_breakfast = random.sample(list(Recipe.objects.filter(meal_time='завтрак')), k=1)[0]
+        recipes.append(random_breakfast)
+    except ValueError:
+        pass
+    try:
+        random_lunch = random.sample(list(Recipe.objects.filter(meal_time='обед')), k=1)[0]
+        recipes.append(random_lunch)
+    except ValueError:
+        pass
+    try:
+        random_dinner = random.sample(list(Recipe.objects.filter(meal_time='ужин')), k=1)[0]
+        recipes.append(random_dinner)
+    except ValueError:
+        pass
+    try:
+        random_dessert = random.sample(list(Recipe.objects.filter(meal_time='десерт')), k=1)[0]
+        recipes.append(random_dessert)
+    except ValueError:
+        pass
+
+    # selected_bouquets = list(Bouquet.objects.all())
+    # random_selected_bouquets = random.sample(selected_bouquets, k=3)
+    # return render(request, 'index.html', {'bouquets': random_selected_bouquets})
+
+    # context = {
+    #     'random_breakfast': random_breakfast,
+    #     'random_lunch': random_lunch,
+    #     'random_dinner': random_dinner,
+    #     'random_dessert': random_dessert,
+    # }
+    return render(request, 'free_recipes.html', {'recipes': recipes})
+
+
 def index(request):
+    request.session.clear()
     return render(request, 'index.html')
 
 
