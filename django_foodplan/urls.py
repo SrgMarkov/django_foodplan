@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('order/', order, name='order'),
     path('pay/', pay, name='pay'),
+    path('process_payment/', process_payment, name='process_payment'),
     path('card/', card, name='card'),
     path('auth/', LoginUser.as_view(), name='auth'),
     path('registration/', RegisterUser.as_view(), name='registration'),
