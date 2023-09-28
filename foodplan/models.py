@@ -15,7 +15,21 @@ ALLERGIES = (
 )
 
 
+class Types(models.TextChoices):
+    CLASSIC = 'классическое', 'классическое'
+    LOW_CARB = 'низкоуглеводное', 'низкоуглеводное'
+    VEGETARIAN = 'вегетарианское', 'вегетарианское'
+    KETO = 'кето', 'кето'
+
+
 class Rate (models.Model):
+
+    type = models.CharField(
+        'тип меню',
+        choices=Types.choices,
+        default=Types.CLASSIC,
+        max_length=30
+    )
 
     term = models.IntegerField(
         'срок',
@@ -147,12 +161,6 @@ class Recipe (models.Model):
         choices=MealTimes.choices,
         max_length=10
     )
-
-    class Types(models.TextChoices):
-        CLASSIC = 'классическое', 'классическое'
-        LOW_CARB = 'низкоуглеводное', 'низкоуглеводное'
-        VEGETARIAN = 'вегетарианское', 'вегетарианское'
-        KETO = 'кето', 'кето'
 
     type = models.CharField(
         'тип меню',
