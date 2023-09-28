@@ -2,9 +2,10 @@ import random
 
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
+
 
 from .forms import *
 from .models import Rate, Ingredient, Recipe, RecipeItem, Order
@@ -34,6 +35,7 @@ class LoginUser(LoginView):
 
 def logout_user(request):
     logout(request)
+    request.session.clear()
     return redirect('index')
 
 
@@ -59,21 +61,15 @@ def free_recipes(request):
         recipes.append(random_dessert)
     except ValueError:
         pass
-
-    # selected_bouquets = list(Bouquet.objects.all())
-    # random_selected_bouquets = random.sample(selected_bouquets, k=3)
-    # return render(request, 'index.html', {'bouquets': random_selected_bouquets})
-
-    # context = {
-    #     'random_breakfast': random_breakfast,
-    #     'random_lunch': random_lunch,
-    #     'random_dinner': random_dinner,
-    #     'random_dessert': random_dessert,
-    # }
     return render(request, 'free_recipes.html', {'recipes': recipes})
 
 
 def index(request):
+    try:
+        user = get_object_or_404(User, pk=request.session['current_user'])
+        print(request.session.get('current_user'), user.password)
+    except KeyError:
+        pass
     return render(request, 'index.html')
 
 
@@ -86,6 +82,10 @@ def registration(request):
 
 
 def lk(request):
+    request.session['current_user'] = request.user.id
+    print(request.session.get('test'))
+    current_user = request.user
+    print(current_user.id, current_user.username)
     return render(request, 'lk.html')
 
 
@@ -99,8 +99,10 @@ def order(request):
 
 
 def card(request):
-    print(request.POST)
-    print(request.POST.get("select1"))
+    return render(request, 'card.html')
+
+
+def pay(request):
     context = {
         'foodtype': request.POST.get('foodtype'),
         'term': request.POST.get('term'),
@@ -115,6 +117,6 @@ def card(request):
         'allergy4': request.POST.get('allergy4'),
         'allergy5': request.POST.get('allergy5'),
         'allergy6': request.POST.get('allergy6'),
+        'promocode': request.POST.get('promocode'),
     }
-    return render(request, 'card.html', context)
-    # return render(request, 'order.html', {'bouquet_pk': request.session.get('bouquet_pk', 0)})
+    return render(request, 'pay.html', context)

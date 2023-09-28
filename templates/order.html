@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <h2><strong>Выберите подходящий тариф</strong></h2>
-                <form id="order" method="post" action="{% url 'card' %}">
+                <form id="order" method="post" action="{% url 'pay' %}">
                 {% csrf_token %}
                 <table class="table text-center text-truncate mb-5">
                     <tbody>
@@ -148,17 +148,20 @@
                         </tr>
                     </tbody>
                 </table>
+                <label for="exampleInputPassword1" class="form-label me-2">Промокод</label>
+                <input type="text" class="form-control me-2" id="password" value="{{ promocode }}" name="promocode">
                 <button type="submit" id="TableSubmit" class="d-none"></button>
                 </form>
 
-                <form class="card d-flex flex-row align-items-baseline mb-5 p-3 foodplan__bg_grey" method="post" action="{% url 'order' %}">
-                {% csrf_token %}
-                    <label for="exampleInputPassword1" class="form-label me-2">Промокод</label>
-                    <input type="password" class="form-control me-2" id="password" value="{{ promocode }}" name="promocode">
-                    <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green">Применить</button>
-                </form>
+<!--                <form class="card d-flex flex-row align-items-baseline mb-5 p-3 foodplan__bg_grey" method="post" action="{% url 'order' %}">-->
+<!--                {% csrf_token %}-->
+<!--                    <label for="exampleInputPassword1" class="form-label me-2">Промокод</label>-->
+<!--                    <input type="password" class="form-control me-2" id="password" value="{{ promocode }}" name="promocode">-->
+<!--                    <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green">Применить</button>-->
+<!--                </form>-->
                 <div class="d-flex justify-content-center my-5">
-                    <button form="order" type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green w-50">Оплатить</button>
+                    <button form="order" type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green w-50">Оформить заказ</button>
+                    <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green w-50" onclick="history.back();">Назад</button>
                 </div>
             </div>
         </section>

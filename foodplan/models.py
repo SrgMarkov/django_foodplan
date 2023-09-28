@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from multiselectfield import MultiSelectField
 from django.utils.timezone import now
+from django.contrib.auth.models import User
 
 
 ALLERGIES = (
@@ -212,13 +213,13 @@ class RecipeItem (models.Model):
 
 
 class Order(models.Model):
-    # client = models.ForeignKey(
-    #     Client,
-    #     on_delete=models.SET_NULL,
-    #     null=True,
-    #     related_name='orders',
-    #     verbose_name='клиент',
-    # )
+    client = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='orders',
+        verbose_name='клиент',
+    )
 
     rate = models.ForeignKey(
         Rate,

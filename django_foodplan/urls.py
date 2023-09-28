@@ -10,6 +10,7 @@ urlpatterns = [
     path('free_recipes/', free_recipes, name='free_recipes'),
     path('admin/', admin.site.urls),
     path('order/', order, name='order'),
+    path('pay/', pay, name='pay'),
     path('card/', card, name='card'),
     path('auth/', LoginUser.as_view(), name='auth'),
     path('registration/', RegisterUser.as_view(), name='registration'),
