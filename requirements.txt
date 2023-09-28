@@ -1,2 +1,5 @@
-Django==4.2.5
-environs==9.5.0
+Django==4.2.*
+environs==9.5.*
+django-multiselectfield==0.1.*
+django-admin-rangefilter==0.10.*
+pillow==10.0.*
