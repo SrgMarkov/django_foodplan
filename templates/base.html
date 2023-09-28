@@ -19,7 +19,16 @@
                     <img src="{% static 'img/logo.png' %}" height="55" width="189" alt="">
                 </a>
                 {% if request.user.is_authenticated %}
-				<li class="last"> Hello, {{user.username}} | <a href="{% url 'logout' %}">Выйти</a></li>
+                <ul class="navbar-nav w-100">
+                    <li class="nav-item align-items-center d-md-flex flex-grow-1 justify-content-end">
+                        <form action="{% url 'lk' %}">
+                            <button class="btn shadow-none btn-outline-success me-2 foodplan_green foodplan__border_green">Личный кабинет | {{user.username}}</button>
+                        </form>
+                        <form action="{% url 'logout' %}">
+                            <button class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green">Выйти</button>
+                        </form>
+                    </li>
+                </ul>
 				{% else %}
                     <ul class="navbar-nav w-100">
                         <li class="nav-item align-items-center d-md-flex flex-grow-1 justify-content-end">

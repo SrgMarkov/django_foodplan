@@ -74,7 +74,6 @@ def free_recipes(request):
 
 
 def index(request):
-    request.session.clear()
     return render(request, 'index.html')
 
 
