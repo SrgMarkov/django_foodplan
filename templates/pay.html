@@ -12,10 +12,9 @@
                     </div>
                     <div class="col-12 col-md-8 d-flex flex-column justify-content-between">
                         <div class="row">
-                            <h2>Название рецепта</h2>
+                            <h2>Вами выбраны следующие опции:</h2>
                             <div class="col-12 col-sm-6 d-flex flex-column justify-content-between">
-                                <h6>Выбор пользователя: <br>
-                                    Тип меню: {{ foodtype }}<br>
+                                <h6>Тип меню: {{ foodtype }}<br>
                                     Срок: {{ term }}<br>
                                     Завтраки {{ breakfast }}<br>
                                     Обеды {{ lunches }}<br>
@@ -31,24 +30,11 @@
                                     - Молочные продукты {{ allergy6 }}<br>
                                     ***<br>
                                     Промокод: {{ promocode }}</h6>
-                                <h6>Описание рецепта Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi eius nemo voluptatum minus
-                                    facilis blanditiis ut architecto rem maiores, aperiam aut debitis repellat quod voluptates natus, laboriosam hic
-                                    adipisci non.</h6>
-                                <h6>Рецепт рецепт Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi eius nemo voluptatum minus
-                                    facilis blanditiis ut architecto rem maiores, aperiam aut debitis repellat quod voluptates natus, laboriosam hic
-                                    adipisci non.</h6>
                             </div>
-                            <div class="col-12 col-sm-6">
-                                <small class="link-secondary">Ингредиенты:</small>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
-                                    <li class="list-group-item disabled"><small>ингредиент (500г.)</small></li>
-                                </ul>
-                                <small class="link-secondary">Общая калорийность: 1000 ккал</small>
-                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center my-5">
+                            <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green w-50" onclick="window.location.href='{% url 'pay' %}'">Оплатить</button>
+                            <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green w-50" onclick="history.back();">Назад</button>
                         </div>
                     </div>
                 </div>
