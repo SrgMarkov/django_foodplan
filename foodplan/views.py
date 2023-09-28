@@ -1,4 +1,5 @@
 import random
+import stripe
 
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
@@ -65,11 +66,6 @@ def free_recipes(request):
 
 
 def index(request):
-    try:
-        user = get_object_or_404(User, pk=request.session['current_user'])
-        print(request.session.get('current_user'), user.password)
-    except KeyError:
-        pass
     return render(request, 'index.html')
 
 
@@ -83,40 +79,130 @@ def registration(request):
 
 def lk(request):
     request.session['current_user'] = request.user.id
-    print(request.session.get('test'))
-    current_user = request.user
-    print(current_user.id, current_user.username)
     return render(request, 'lk.html')
 
 
 def order(request):
-    promocode = ''
-    if request.method == 'POST':
-        print(request.POST)
-        promocode = request.POST.get('promocode', '')
-        print(promocode)
-    return render(request, 'order.html', {'promocode': promocode})
+    return render(request, 'order.html')
 
 
 def card(request):
     return render(request, 'card.html')
 
 
+# тут лучше как то использовать класс Types из модели Recipe
+foodtypes = {
+        'classic': 'классическое',
+        'low_carb': 'низкоуглеводное',
+        'vegetarian': 'вегетарианское',
+        'keto': 'кето',
+    }
+
+
 def pay(request):
+    try:
+        user = get_object_or_404(User, pk=request.session['current_user'])
+    except KeyError:
+        return render(request, 'pay.html', {'warning': 'До оформления заказа необходимо войти или зарегистрироваться'})
     context = {
-        'foodtype': request.POST.get('foodtype'),
-        'term': request.POST.get('term'),
-        'breakfast': request.POST.get('breakfast'),
-        'lunches': request.POST.get('lunches'),
-        'dinners': request.POST.get('dinners'),
-        'desserts': request.POST.get('desserts'),
-        'persons_number': request.POST.get('persons_number'),
-        'allergy1': request.POST.get('allergy1'),
-        'allergy2': request.POST.get('allergy2'),
-        'allergy3': request.POST.get('allergy3'),
-        'allergy4': request.POST.get('allergy4'),
-        'allergy5': request.POST.get('allergy5'),
-        'allergy6': request.POST.get('allergy6'),
+        'foodtype': foodtypes[request.POST.get('foodtype')],
+        'term': int(request.POST.get('term')),
+        'breakfasts': bool(int(request.POST.get('breakfasts'))),
+        'lunches': bool(int(request.POST.get('lunches'))),
+        'dinners': bool(int(request.POST.get('dinners'))),
+        'desserts': bool(int(request.POST.get('desserts'))),
+        'persons_number': int(request.POST.get('persons_number')),
+        'allergy1': bool(request.POST.get('allergy1')),
+        'allergy2': bool(request.POST.get('allergy2')),
+        'allergy3': bool(request.POST.get('allergy3')),
+        'allergy4': bool(request.POST.get('allergy4')),
+        'allergy5': bool(request.POST.get('allergy5')),
+        'allergy6': bool(request.POST.get('allergy6')),
         'promocode': request.POST.get('promocode'),
     }
+
+    allergies = ''
+    for num in range(6):
+        if context[f'allergy{num+1}']:
+            allergies += f'{num+1},'
+    if allergies:
+        allergies = allergies[:len(allergies)-1]
+
+    price = 0
+    if context['breakfasts']:
+        price += 400
+    if context['lunches']:
+        price += 700
+    if context['dinners']:
+        price += 500
+    if context['desserts']:
+        price += 200
+    # увеличение за рассчет на количество человек
+    price += (100 * context['persons_number'])
+
+    # для промокодов целесообразно создать отдельную модель и рулить ими в админке
+    # if context['promocode'] in request.session['promocodes']:
+    if context['promocode'] == '12345':
+        price *= 0.8
+
+    for num in range(6):
+        if context[f'allergy{num+1}']:
+            price += 100
+
+    context['price'] = price
+
+    # почему-то всегда создает новую запись тарифа, какие то символы преобразуются в процессе создания? может аллергии?
+    new_rate, rate_created = Rate.objects.get_or_create(
+        type=context['foodtype'],
+        term=context['term'],
+        breakfasts=context['breakfasts'],
+        lunches=context['lunches'],
+        dinners=context['dinners'],
+        desserts=context['desserts'],
+        persons_number=context['persons_number'],
+        allergies=allergies,
+        promo_code=context['promocode'],
+        defaults={'price': price},
+    )
+    print(f'{new_rate.allergies} {type(new_rate.allergies)}')
+
+    new_order = Order.objects.create(
+        client=user,
+        rate=new_rate,
+    )
+    request.session['order_pk'] = new_order.id
     return render(request, 'pay.html', context)
+
+
+def process_payment(request):
+    if request.method == 'POST':
+        user = get_object_or_404(User, pk=request.session['current_user'])
+        email = user.email
+        payment_success = False
+        payment_failed = False
+        price = request.session.get('price', 0)
+        try:
+            stripe.Charge.create(
+                amount=price * 100,
+                currency="usd",
+                source="tok_visa",  # Используем тестовый токен
+                description="Оплата заказа",
+                receipt_email=email,
+            )
+            payment_success = True
+        except stripe.error.CardError:
+            payment_failed = True
+        except stripe.error.StripeError:
+            payment_failed = True
+
+        if payment_success:
+            new_order = Order.objects.get(pk=request.session.get('order_pk', 0))
+            new_order.payed = True
+            new_order.save()
+
+        context = {
+            'payment_success': payment_success,
+            'payment_failed': payment_failed,
+            'price': price,
+        }
+        return render(request, 'pay.html', context)

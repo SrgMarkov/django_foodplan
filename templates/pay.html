@@ -12,30 +12,84 @@
                     </div>
                     <div class="col-12 col-md-8 d-flex flex-column justify-content-between">
                         <div class="row">
+                            <h1>{{ warning }}</h1>
                             <h2>Вами выбраны следующие опции:</h2>
                             <div class="col-12 col-sm-6 d-flex flex-column justify-content-between">
                                 <h6>Тип меню: {{ foodtype }}<br>
-                                    Срок: {{ term }}<br>
-                                    Завтраки {{ breakfast }}<br>
-                                    Обеды {{ lunches }}<br>
-                                    Ужины {{ dinners }}<br>
-                                    Десерты {{ desserts }}<br>
+                                    Срок: {{ term }} мес.<br>
+                                    {% if breakfasts %}
+                                        Завтраки<br>
+                                    {% endif %}
+                                    {% if lunches %}
+                                        Обеды<br>
+                                    {% endif %}
+                                    {% if dinners %}
+                                        Ужины<br>
+                                    {% endif %}
+                                    {% if desserts %}
+                                        Десерты<br>
+                                    {% endif %}
                                     Кол-во персон: {{ persons_number }}<br>
                                     Аллергии:<br>
-                                    - Рыба и морепродукты {{ allergy1 }}<br>
-                                    - Мясо {{ allergy2 }}<br>
-                                    - Зерновые {{ allergy3 }}<br>
-                                    - Продукты пчеловодства {{ allergy4 }}<br>
-                                    - Орехи и бобовые {{ allergy5 }}<br>
-                                    - Молочные продукты {{ allergy6 }}<br>
-                                    ***<br>
-                                    Промокод: {{ promocode }}</h6>
+                                    {% if allergy1 %}
+                                        - рыба и морепродукты<br>
+                                    {% endif %}
+                                    {% if allergy2 %}
+                                        - мясо<br>
+                                    {% endif %}
+                                    {% if allergy3 %}
+                                        - зерновые<br>
+                                    {% endif %}
+                                    {% if allergy4 %}
+                                        - продукты пчеловодства<br>
+                                    {% endif %}
+                                    {% if allergy5 %}
+                                        - орехи и бобовые<br>
+                                    {% endif %}
+                                    {% if allergy6 %}
+                                        - молочные продукты<br>
+                                    {% endif %}
+                                    <br>
+                                    {% if promocode %}
+                                        Примененный промокод: {{ promocode }}</h6>
+                                    {% endif %}
+                            </div>
+                            <h3>Итого стоимость подписки: {{ price }}</h3>
+                        </div>
+                        <form action="{% url 'process_payment' %}" method="post" class="order__form orderStep_form">
+                        {% csrf_token %}
+                        <div class="order__form_messages">
+                            {% if payment_success %}
+                                <p class="success-message" style="color: green;">Платеж успешно выполнен!</p>
+                            {% elif payment_failed %}
+                                <p class="error-message" style="color: red;">Платеж не удался. Пожалуйста, проверьте данные вашей карты.</p>
+                            {% elif stripe_error %}
+                                <p class="error-message" style="color: red;">Произошла ошибка при обработке платежа.</p>
+                            {% endif %}
+                            <br/>
+                        </div>
+                        <div class="order__form_block">
+                            <div class="order__form_items">
+                                <div class="order__form_intro">номер карты</div>
+                                <input type="text" name="cardNum" class="order__form_input orderStep_form_input" placeholder="Введите номер" required>
+                                <div class="order__form_item fic">
+                                    <input type="text" name="cardMm" class="order__form_input orderStep_form_input" placeholder="ММ" required>
+                                    <input type="text" name="cardGg" class="order__form_input orderStep_form_input" placeholder="ГГ" required>
+                                </div>
+                                <input type="text" name="cardFname" class="order__form_input orderStep_form_input" placeholder="Имя владельца" required>
+                                <input type="text" name="cardCvc" class="order__form_input orderStep_form_input" placeholder="CVC" required>
+                            </div>
+                            <div class="order__form_items">
+                                <div class="order__form_intro">Ваш e-mail</div>
+                                <input type="email" name="mail" class="order__form_input orderStep_form_input" placeholder="pochta@mail.ru">
                             </div>
                         </div>
-                        <div class="d-flex justify-content-center my-5">
-                            <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green w-50" onclick="window.location.href='{% url 'pay' %}'">Оплатить</button>
+                        <div class="order__form_line"></div>
+                        <div class="order__form_btns ficb">
+                            <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green w-50">Оплатить</button>
                             <button type="submit" class="btn shadow-none btn-outline-success foodplan_green foodplan__border_green w-50" onclick="history.back();">Назад</button>
                         </div>
+                        </form>
                     </div>
                 </div>
             </div>
