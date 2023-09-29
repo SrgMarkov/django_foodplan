@@ -8,6 +8,10 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import *
 from .models import Rate, Ingredient, Recipe, RecipeItem, Order
+from environs import Env
+
+env = Env()
+stripe.api_key = env('STRIPE_API_KEY')
 
 
 class RegisterUser(CreateView):
@@ -146,6 +150,7 @@ def pay(request):
             price += 100
 
     context['price'] = price
+    request.session['price'] = price
 
     # почему-то всегда создает новую запись тарифа, какие то символы преобразуются в процессе создания? может аллергии?
     new_rate, rate_created = Rate.objects.get_or_create(
@@ -172,17 +177,16 @@ def pay(request):
 def process_payment(request):
     if request.method == 'POST':
         user = get_object_or_404(User, pk=request.session['current_user'])
-        email = user.email
         payment_success = False
         payment_failed = False
         price = request.session.get('price', 0)
         try:
-            stripe.Charge.create(
+            pay_result = stripe.Charge.create(
                 amount=price * 100,
                 currency="usd",
                 source="tok_visa",  # Используем тестовый токен
                 description="Оплата заказа",
-                receipt_email=email,
+                receipt_email=user.email,
             )
             payment_success = True
         except stripe.error.CardError:
