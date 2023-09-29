@@ -80,6 +80,7 @@ class Rate(admin.ModelAdmin):
     )
 
     list_display = (
+        'type',
         'term',
         'breakfasts',
         'lunches',

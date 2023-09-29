@@ -6,10 +6,12 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-
-
 from .forms import *
 from .models import Rate, Ingredient, Recipe, RecipeItem, Order
+from environs import Env
+
+env = Env()
+stripe.api_key = env('STRIPE_API_KEY')
 
 
 class RegisterUser(CreateView):
@@ -124,9 +126,7 @@ def pay(request):
     allergies = ''
     for num in range(6):
         if context[f'allergy{num+1}']:
-            allergies += f'{num+1},'
-    if allergies:
-        allergies = allergies[:len(allergies)-1]
+            allergies += f'{num+1}'
 
     price = 0
     if context['breakfasts']:
@@ -150,6 +150,7 @@ def pay(request):
             price += 100
 
     context['price'] = price
+    request.session['price'] = price
 
     # почему-то всегда создает новую запись тарифа, какие то символы преобразуются в процессе создания? может аллергии?
     new_rate, rate_created = Rate.objects.get_or_create(
@@ -160,11 +161,10 @@ def pay(request):
         dinners=context['dinners'],
         desserts=context['desserts'],
         persons_number=context['persons_number'],
-        allergies=allergies,
+        allergies=list(allergies),
         promo_code=context['promocode'],
         defaults={'price': price},
     )
-    print(f'{new_rate.allergies} {type(new_rate.allergies)}')
 
     new_order = Order.objects.create(
         client=user,
@@ -177,17 +177,16 @@ def pay(request):
 def process_payment(request):
     if request.method == 'POST':
         user = get_object_or_404(User, pk=request.session['current_user'])
-        email = user.email
         payment_success = False
         payment_failed = False
         price = request.session.get('price', 0)
         try:
-            stripe.Charge.create(
+            pay_result = stripe.Charge.create(
                 amount=price * 100,
                 currency="usd",
                 source="tok_visa",  # Используем тестовый токен
                 description="Оплата заказа",
-                receipt_email=email,
+                receipt_email=user.email,
             )
             payment_success = True
         except stripe.error.CardError:
