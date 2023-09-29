@@ -5,13 +5,13 @@
         <section>
             <div class="container">
                 <h1><strong class="foodplan_green">1 шаг </strong>до первого меню</h1>
-                <h5 class="text-secondary mb-3">Вам будет доступно 4 типа меню: Классическое, Низкоуглеводное, Вегетарианское и Кето.</h5>
+                <h5 class="text-secondary mb-3">Вам доступно 4 типа меню: Классическое, Низкоуглеводное, Вегетарианское и Кето.</h5>
                 <div class="row mb-5">
                     <div class="col-6 col-md-3">
                         
                         <label for="classic" class="position-relative" style="cursor: pointer;">
                             <img src="{% static 'img/menu_classical.png' %}" alt="" class="w-100">
-                            <input form="order" type="radio" name="foodtype" id="classic" value="classic" class="foodplan_selected d-none" required>
+                            <input form="order" type="radio" name="foodtype" id="classic" value="classic" class="foodplan_selected d-none" checked required>
                             <div class="img_selected" id="img1"></div>
                         </label>
                     </div>

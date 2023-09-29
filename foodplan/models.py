@@ -96,8 +96,8 @@ class Rate (models.Model):
         verbose_name_plural = 'тарифы'
 
     def __str__(self):
-        return f'{self.term}: {self.breakfasts},{self.lunches},{self.dinners},{self.desserts},{self.persons_number},' \
-               f'{self.price}р.'
+        return f'{self.type} {self.term} {self.breakfasts} {self.lunches} {self.dinners} {self.desserts} ' \
+               f'{self.persons_number}' f'{self.price} руб.'
 
 
 class Ingredient (models.Model):

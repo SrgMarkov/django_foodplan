@@ -68,6 +68,10 @@ def free_recipes(request):
 
 
 def index(request):
+    # if request.session.get('current_user'):
+    #     current_user = request.session.get('current_user')
+    #     request.session.clear()
+    #     request.session['current_user'] = current_user
     return render(request, 'index.html')
 
 
@@ -150,7 +154,7 @@ def pay(request):
             price += 100
 
     context['price'] = price
-    request.session['price'] = price
+    request.session['context'] = context
 
     # почему-то всегда создает новую запись тарифа, какие то символы преобразуются в процессе создания? может аллергии?
     new_rate, rate_created = Rate.objects.get_or_create(
@@ -176,10 +180,15 @@ def pay(request):
 
 def process_payment(request):
     if request.method == 'POST':
+        context = request.session.get('context')
         user = get_object_or_404(User, pk=request.session['current_user'])
         payment_success = False
         payment_failed = False
-        price = request.session.get('price', 0)
+        stripe_error = False
+        pay_result = 'ХХХХ'
+        price = context['price']
+        print(f'цена {price}')
+
         try:
             pay_result = stripe.Charge.create(
                 amount=price * 100,
@@ -189,19 +198,23 @@ def process_payment(request):
                 receipt_email=user.email,
             )
             payment_success = True
-        except stripe.error.CardError:
+        except stripe.error.CardError as error:
             payment_failed = True
-        except stripe.error.StripeError:
-            payment_failed = True
+            print(error)
+        except stripe.error.StripeError as error:
+            stripe_error = True
+            print(error)
 
         if payment_success:
             new_order = Order.objects.get(pk=request.session.get('order_pk', 0))
             new_order.payed = True
             new_order.save()
 
-        context = {
-            'payment_success': payment_success,
-            'payment_failed': payment_failed,
-            'price': price,
-        }
+        context['payment_success'] = payment_success
+        context['payment_failed'] = payment_failed
+        context['stripe_error'] = stripe_error
+
+        print(pay_result)
+        print(context)
+
         return render(request, 'pay.html', context)
