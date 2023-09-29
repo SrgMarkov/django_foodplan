@@ -185,12 +185,10 @@ def process_payment(request):
         payment_success = False
         payment_failed = False
         stripe_error = False
-        pay_result = 'ХХХХ'
         price = context['price']
-        print(f'цена {price}')
 
         try:
-            pay_result = stripe.Charge.create(
+            stripe.Charge.create(
                 amount=price * 100,
                 currency="usd",
                 source="tok_visa",  # Используем тестовый токен
@@ -200,10 +198,8 @@ def process_payment(request):
             payment_success = True
         except stripe.error.CardError as error:
             payment_failed = True
-            print(error)
         except stripe.error.StripeError as error:
             stripe_error = True
-            print(error)
 
         if payment_success:
             new_order = Order.objects.get(pk=request.session.get('order_pk', 0))
@@ -213,8 +209,5 @@ def process_payment(request):
         context['payment_success'] = payment_success
         context['payment_failed'] = payment_failed
         context['stripe_error'] = stripe_error
-
-        print(pay_result)
-        print(context)
 
         return render(request, 'pay.html', context)

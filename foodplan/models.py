@@ -97,7 +97,7 @@ class Rate (models.Model):
 
     def __str__(self):
         return f'{self.type} {self.term} {self.breakfasts} {self.lunches} {self.dinners} {self.desserts} ' \
-               f'{self.persons_number}' f'{self.price} руб.'
+               f'{self.persons_number} {self.price} руб.'
 
 
 class Ingredient (models.Model):
