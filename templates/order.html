@@ -11,7 +11,7 @@
                         
                         <label for="classic" class="position-relative" style="cursor: pointer;">
                             <img src="{% static 'img/menu_classical.png' %}" alt="" class="w-100">
-                            <input form="order" type="radio" name="foodtype" id="classic" value="classic" class="foodplan_selected d-none">
+                            <input form="order" type="radio" name="foodtype" id="classic" value="classic" class="foodplan_selected d-none" required>
                             <div class="img_selected" id="img1"></div>
                         </label>
                     </div>
@@ -19,7 +19,7 @@
                         
                         <label for="low_carb" class="position-relative" style="cursor: pointer;">
                             <img src="{% static 'img/menu_nizkougl.png' %}" alt="" class="w-100">
-                            <input form="order" type="radio" name="foodtype" id="low_carb" value="low_carb" class="foodplan_selected d-none">
+                            <input form="order" type="radio" name="foodtype" id="low_carb" value="low_carb" class="foodplan_selected d-none" required>
                             <div class="img_selected" id="img2"></div>
                         </label>
                     </div>
@@ -27,7 +27,7 @@
                         
                         <label for="vegetarian" class="position-relative" style="cursor: pointer;">
                             <img src="{% static 'img/menu_veg.png' %}" alt="" class="w-100">
-                            <input form="order" type="radio" name="foodtype" id="vegetarian" value="vegetarian" class="foodplan_selected d-none">
+                            <input form="order" type="radio" name="foodtype" id="vegetarian" value="vegetarian" class="foodplan_selected d-none" required>
                             <div class="img_selected" id="img3"></div>
                         </label>
                     </div>
@@ -35,7 +35,7 @@
                         
                         <label for="keto" class="position-relative" style="cursor: pointer;">
                             <img src="{% static 'img/menu_keto.png' %}" alt="" class="w-100">
-                            <input form="order" type="radio" name="foodtype" id="keto" value="keto" class="foodplan_selected d-none">
+                            <input form="order" type="radio" name="foodtype" id="keto" value="keto" class="foodplan_selected d-none" required>
                             <div class="img_selected" id="img4"></div>
                         </label>
                     </div>
