@@ -6,8 +6,6 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-
-
 from .forms import *
 from .models import Rate, Ingredient, Recipe, RecipeItem, Order
 
@@ -124,9 +122,7 @@ def pay(request):
     allergies = ''
     for num in range(6):
         if context[f'allergy{num+1}']:
-            allergies += f'{num+1},'
-    if allergies:
-        allergies = allergies[:len(allergies)-1]
+            allergies += f'{num+1}'
 
     price = 0
     if context['breakfasts']:
@@ -160,11 +156,10 @@ def pay(request):
         dinners=context['dinners'],
         desserts=context['desserts'],
         persons_number=context['persons_number'],
-        allergies=allergies,
+        allergies=list(allergies),
         promo_code=context['promocode'],
         defaults={'price': price},
     )
-    print(f'{new_rate.allergies} {type(new_rate.allergies)}')
 
     new_order = Order.objects.create(
         client=user,
