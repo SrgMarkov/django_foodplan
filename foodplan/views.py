@@ -85,7 +85,49 @@ def registration(request):
 
 def lk(request):
     request.session['current_user'] = request.user.id
-    return render(request, 'lk.html')
+    last_order = Order.objects.filter(client=request.user.id).select_related('rate').last()
+    if not last_order:
+        return render(request, 'lk.html', {'last_order': False})
+    elif not last_order.payed:
+        return render(request, 'lk.html', {'last_order': 'dont_payed'})
+
+    rate = last_order.rate
+
+    callories = 0
+    recipes = []
+    rate_meal_times = []
+
+    if rate.breakfasts:
+        rate_meal_times.append('завтрак')
+    if rate.lunches:
+        rate_meal_times.append('обед')
+    if rate.dinners:
+        rate_meal_times.append('ужин')
+    if rate.desserts:
+        rate_meal_times.append('десерт')
+
+    for meal_time in rate_meal_times:
+        try:
+            random_meal_time_recipe = random.sample(list(Recipe.objects.filter(
+                meal_time=meal_time,
+                type=rate.type,
+            ).exclude(
+                allergies__in=list(rate.allergies),
+            )), k=1)[0]
+            recipes.append(random_meal_time_recipe)
+            callories += random_meal_time_recipe.calories
+
+        except ValueError:
+            pass
+
+    return render(
+        request, 'lk.html',
+        {'last_order': last_order,
+         'rate': rate,
+         'recipes': recipes,
+         'callories': callories,
+         }
+    )
 
 
 def order(request):

@@ -72,8 +72,11 @@ class Rate (models.Model):
         ])
 
     allergies = MultiSelectField(
+        'наличие аллергии',
         choices=ALLERGIES,
         max_length=11,
+        null=True,
+        blank=True,
     )
 
     promo_code = models.CharField(
@@ -167,6 +170,14 @@ class Recipe (models.Model):
         choices=Types.choices,
         default=Types.CLASSIC,
         max_length=30
+    )
+
+    allergies = MultiSelectField(
+        'противопоказания (аллергии)',
+        choices=ALLERGIES,
+        max_length=11,
+        null=True,
+        blank=True,
     )
 
     calories = models.IntegerField(
