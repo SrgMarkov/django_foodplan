@@ -85,7 +85,76 @@ def registration(request):
 
 def lk(request):
     request.session['current_user'] = request.user.id
-    return render(request, 'lk.html')
+    last_order = Order.objects.filter(client=request.user.id).last()
+    print(last_order)
+    if not last_order:
+        return render(request, 'lk.html', {'last_order': False})
+    elif not last_order.payed:
+        return render(request, 'lk.html', {'last_order': 'dont_payed'})
+
+    rate = last_order.rate
+
+    callories = 0
+    recipes = []
+    try:
+        random_breakfast = random.sample(list(Recipe.objects.filter(
+            meal_time='завтрак',
+            type=rate.type,
+        ).exclude(
+            allergies__in=list(rate.allergies),
+        )), k=1)[0]
+        recipes.append(random_breakfast)
+        callories += random_breakfast.calories
+
+        print(rate.allergies, type(rate.allergies))
+        print(random_breakfast.allergies, type(random_breakfast.allergies))
+
+    except ValueError:
+        pass
+
+    try:
+        random_lunch = random.sample(list(Recipe.objects.filter(
+            meal_time='обед',
+            type=rate.type,
+        ).exclude(
+            allergies__in=list(rate.allergies),
+        )), k=1)[0]
+        recipes.append(random_lunch)
+        callories += random_lunch.calories
+    except ValueError:
+        pass
+
+    try:
+        random_dinner = random.sample(list(Recipe.objects.filter(
+            meal_time='ужин',
+            type=rate.type,
+        ).exclude(
+            allergies__in=list(rate.allergies),
+        )), k=1)[0]
+        recipes.append(random_dinner)
+        callories += random_dinner.calories
+    except ValueError:
+        pass
+
+    try:
+        random_dessert = random.sample(list(Recipe.objects.filter(
+            meal_time='десерт',
+            type=rate.type,
+        ).exclude(
+            allergies__in=list(rate.allergies),
+        )), k=1)[0]
+        recipes.append(random_dessert)
+        callories += random_dessert.calories
+    except ValueError:
+        pass
+    return render(
+        request, 'lk.html',
+        {'last_order': last_order,
+         'rate': rate,
+         'recipes': recipes,
+         'callories': callories,
+         }
+    )
 
 
 def order(request):
