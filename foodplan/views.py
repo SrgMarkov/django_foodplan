@@ -85,8 +85,7 @@ def registration(request):
 
 def lk(request):
     request.session['current_user'] = request.user.id
-    last_order = Order.objects.filter(client=request.user.id).last()
-    print(last_order)
+    last_order = Order.objects.filter(client=request.user.id).select_related('rate').last()
     if not last_order:
         return render(request, 'lk.html', {'last_order': False})
     elif not last_order.payed:
@@ -96,57 +95,31 @@ def lk(request):
 
     callories = 0
     recipes = []
-    try:
-        random_breakfast = random.sample(list(Recipe.objects.filter(
-            meal_time='завтрак',
-            type=rate.type,
-        ).exclude(
-            allergies__in=list(rate.allergies),
-        )), k=1)[0]
-        recipes.append(random_breakfast)
-        callories += random_breakfast.calories
+    rate_meal_times = []
 
-        print(rate.allergies, type(rate.allergies))
-        print(random_breakfast.allergies, type(random_breakfast.allergies))
+    if rate.breakfasts:
+        rate_meal_times.append('завтрак')
+    if rate.lunches:
+        rate_meal_times.append('обед')
+    if rate.dinners:
+        rate_meal_times.append('ужин')
+    if rate.desserts:
+        rate_meal_times.append('десерт')
 
-    except ValueError:
-        pass
+    for meal_time in rate_meal_times:
+        try:
+            random_meal_time_recipe = random.sample(list(Recipe.objects.filter(
+                meal_time=meal_time,
+                type=rate.type,
+            ).exclude(
+                allergies__in=list(rate.allergies),
+            )), k=1)[0]
+            recipes.append(random_meal_time_recipe)
+            callories += random_meal_time_recipe.calories
 
-    try:
-        random_lunch = random.sample(list(Recipe.objects.filter(
-            meal_time='обед',
-            type=rate.type,
-        ).exclude(
-            allergies__in=list(rate.allergies),
-        )), k=1)[0]
-        recipes.append(random_lunch)
-        callories += random_lunch.calories
-    except ValueError:
-        pass
+        except ValueError:
+            pass
 
-    try:
-        random_dinner = random.sample(list(Recipe.objects.filter(
-            meal_time='ужин',
-            type=rate.type,
-        ).exclude(
-            allergies__in=list(rate.allergies),
-        )), k=1)[0]
-        recipes.append(random_dinner)
-        callories += random_dinner.calories
-    except ValueError:
-        pass
-
-    try:
-        random_dessert = random.sample(list(Recipe.objects.filter(
-            meal_time='десерт',
-            type=rate.type,
-        ).exclude(
-            allergies__in=list(rate.allergies),
-        )), k=1)[0]
-        recipes.append(random_dessert)
-        callories += random_dessert.calories
-    except ValueError:
-        pass
     return render(
         request, 'lk.html',
         {'last_order': last_order,
