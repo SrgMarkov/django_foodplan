@@ -28,6 +28,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'admin_image',
         'meal_time',
         'type',
+        'allergies',
         'calories',
         'relevance',
     )
@@ -115,7 +116,7 @@ class OrderAdmin(admin.ModelAdmin):
     )
 
     list_display = (
-        # 'client',
+        'client',
         'rate',
         'created_datetime',
         'payed',
