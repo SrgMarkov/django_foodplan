@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import *
-from .models import Rate, Ingredient, Recipe, RecipeItem, Order
+from .models import Rate, Recipe, Order
 from environs import Env
 
 env = Env()
@@ -108,15 +108,15 @@ def lk(request):
 
     for meal_time in rate_meal_times:
         try:
-            random_meal_time_recipe = random.sample(list(Recipe.objects.filter(
-                meal_time=meal_time,
-                type=rate.type,
-            ).exclude(
-                allergies__in=list(rate.allergies),
-            )), k=1)[0]
+            meal_time_recipes = []
+            all_meal_time_recipes = Recipe.objects.filter(meal_time=meal_time, type=rate.type)
+            for meal_time_recipe in all_meal_time_recipes:
+                if any(map(lambda allergy: allergy in meal_time_recipe.allergies, rate.allergies)):
+                    continue
+                meal_time_recipes.append(meal_time_recipe)
+            random_meal_time_recipe = random.sample(meal_time_recipes, k=1)[0]
             recipes.append(random_meal_time_recipe)
             callories += random_meal_time_recipe.calories
-
         except ValueError:
             pass
 
@@ -126,6 +126,7 @@ def lk(request):
          'rate': rate,
          'recipes': recipes,
          'callories': callories,
+         'user': request.user,
          }
     )
 
@@ -198,7 +199,6 @@ def pay(request):
     context['price'] = price
     request.session['context'] = context
 
-    # почему-то всегда создает новую запись тарифа, какие то символы преобразуются в процессе создания? может аллергии?
     new_rate, rate_created = Rate.objects.get_or_create(
         type=context['foodtype'],
         term=context['term'],
@@ -238,9 +238,9 @@ def process_payment(request):
                 receipt_email=user.email,
             )
             payment_success = True
-        except stripe.error.CardError as error:
+        except stripe.error.CardError:
             payment_failed = True
-        except stripe.error.StripeError as error:
+        except stripe.error.StripeError:
             stripe_error = True
 
         if payment_success:
